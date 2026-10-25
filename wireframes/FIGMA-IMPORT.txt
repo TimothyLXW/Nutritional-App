@@ -1,0 +1,1 @@
+Drag All-Screens-Board.svg into Figma for the full overview, or import individual NutriGoal-*.svg screens. SVGs are static vector wireframes, not interactive Figma prototypes or Auto Layout components. Figma may outline text. Emoji, shadows and gradients may render differently. See the source README for details.
