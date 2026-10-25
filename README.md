@@ -1,4 +1,5 @@
 # Nutritional-App
+
 FYP project.
 
 ---
@@ -26,6 +27,8 @@ npm run preview
 Deploy the `dist` directory to a static host. No backend configuration or API keys are needed. External Google Fonts are optional; system sans-serif fonts are the fallback.
 
 ## Bring the wireframes into Figma
+
+Use `downloads/NutriGoal-Figma-Wireframes-v2.zip` for the corrected export. The original combined board used namespace-prefixed nested SVGs that some importers skipped. Version 2 uses one SVG root, ordinary groups, explicit transforms and resolved icon colours.
 
 1. Unzip the wireframe archive, or open the `wireframes` directory.
 2. Drag the `.svg` files into a Figma design file (desktop or browser).
@@ -65,11 +68,13 @@ Authentication, social sign-in, camera access, barcode lookup, AI recognition, b
 
 Production build passed. Headless Chromium verified logging and totals, reload persistence, portion replacement, barcode sample logging, AI ingredient removal, free-to-premium flow, recipe creation, onboarding and mock account validation. All principal screen SVGs parsed successfully as XML and contain native text without `foreignObject`. A 390 px mobile viewport was checked for horizontal overflow. No browser runtime errors occurred in those flows.
 
-SVG files were also rendered in Chromium for visual inspection. Import inside Figma itself has not been verified.
+SVG files were also rendered in Chromium for visual inspection. Import inside Figma itself has not been verified. The corrected exports have structural regression checks (`python3 -m unittest discover -s tests`) to reject nested SVG viewports, namespace-prefixed tags, unresolved icon colours and missing screen groups.
+
+`wireframes/All-Screens-Reference.png` is a flattened reference image that can also be dragged into Figma. It preserves the layout but is not editable as vector layers. To rebuild the vector board after exporting screens, run `python3 scripts/prepare-wireframes.py`.
 
 ## Download packages
 
 - [Frontend source ZIP](downloads/NutriGoal-Frontend.zip)
-- [Figma wireframes ZIP](downloads/NutriGoal-Figma-Wireframes.zip)
+- [Corrected Figma wireframes ZIP — v2](downloads/NutriGoal-Figma-Wireframes-v2.zip)
 
 Open a ZIP on GitHub and select **Download raw file** to download it. Alternatively, select **Code → Download ZIP** from the repository homepage.

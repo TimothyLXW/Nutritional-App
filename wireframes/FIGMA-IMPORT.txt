@@ -1,1 +1,7 @@
-Drag All-Screens-Board.svg into Figma for the full overview, or import individual NutriGoal-*.svg screens. SVGs are static vector wireframes, not interactive Figma prototypes or Auto Layout components. Figma may outline text. Emoji, shadows and gradients may render differently. See the source README for details.
+VERSION 2 — Corrected SVG structure
+
+Drag All-Screens-Board.svg into Figma, or import individual NutriGoal-*.svg files. The SVG files contain one root SVG and ordinary groups, without namespace-prefixed elements or nested SVG viewports.
+
+All-Screens-Reference.png is a flattened image fallback. It is not editable as vector layers.
+
+SVGs are static wireframes: prototype connections and Auto Layout must be created in Figma. Figma may outline text; emoji, shadows and gradients can vary. Actual import inside Figma has not been independently verified.

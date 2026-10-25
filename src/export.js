@@ -100,5 +100,76 @@ export function screenSVG(root) {
         );
     }
   }
-  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${bounds.width}" height="${bounds.height}" viewBox="0 0 ${bounds.width} ${bounds.height}"><title>NutriGoal AI — ${escape(root.dataset.screen || "Screen")}</title>${parts.join("")}</svg>`;
+  return normalizeForFigma(
+    `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${bounds.width}" height="${bounds.height}" viewBox="0 0 ${bounds.width} ${bounds.height}"><title>NutriGoal AI — ${escape(root.dataset.screen || "Screen")}</title>${parts.join("")}</svg>`,
+  );
+}
+
+// Figma's SVG importer handles simple groups more reliably than nested viewports.
+// Keep one SVG root, resolve inherited currentColor and express icon viewBoxes
+// as explicit group transforms. Text and vector geometry stay editable as SVG.
+export function normalizeForFigma(source) {
+  const namespace = "http://www.w3.org/2000/svg";
+  const doc = new DOMParser().parseFromString(source, "image/svg+xml");
+  if (doc.querySelector("parsererror"))
+    throw new Error("Could not parse exported SVG");
+  const visit = (node, inheritedColor = "#000000", root = false) => {
+    const currentColor = node.getAttribute("color") || inheritedColor;
+    const viewport = node.localName === "svg" && !root;
+    const result = doc.createElementNS(
+      namespace,
+      viewport ? "g" : node.localName,
+    );
+    for (const attribute of node.attributes) {
+      const key = attribute.localName;
+      if (
+        attribute.name.startsWith("xmlns") ||
+        key === "class" ||
+        key === "color" ||
+        key.startsWith("data-")
+      )
+        continue;
+      if (
+        viewport &&
+        [
+          "x",
+          "y",
+          "width",
+          "height",
+          "viewBox",
+          "preserveAspectRatio",
+          "transform",
+        ].includes(key)
+      )
+        continue;
+      let value = attribute.value.replaceAll("currentColor", currentColor);
+      if (key === "letter-spacing") value = value.replace(/px$/, "");
+      result.setAttribute(key, value);
+    }
+    if (viewport) {
+      const [vx, vy, vw, vh] = (node.getAttribute("viewBox") || "0 0 24 24")
+        .trim()
+        .split(/[\s,]+/)
+        .map(Number);
+      const x = Number(node.getAttribute("x") || 0),
+        y = Number(node.getAttribute("y") || 0);
+      const width = Number(node.getAttribute("width") || vw),
+        height = Number(node.getAttribute("height") || vh);
+      const original = node.getAttribute("transform") || "";
+      result.setAttribute(
+        "transform",
+        `${original} translate(${x} ${y}) scale(${width / vw} ${height / vh}) translate(${-vx} ${-vy})`.trim(),
+      );
+    }
+    for (const child of node.childNodes)
+      result.appendChild(
+        child.nodeType === Node.ELEMENT_NODE
+          ? visit(child, currentColor)
+          : child.cloneNode(true),
+      );
+    return result;
+  };
+  return new XMLSerializer().serializeToString(
+    visit(doc.documentElement, "#000000", true),
+  );
 }
